@@ -6,11 +6,14 @@ import (
 		"fmt"
 		"log"
 		"net/http"
+		//"io"
 		//"github.com/julienschmidt/httprouter"
 		//"strconv"
+		//"os"
 		//"strings"
 		//"time"
 		_"github.com/go-sql-driver/mysql"
+		//"bytes"
 )
 
 type event struct {
@@ -21,21 +24,28 @@ type event struct {
 		HostEvent		string
 }
 
+
 type myEvent struct {
-		ID_event		int		`json: "ID_event, omitempty"`
-		NamaEvent		string	`json: "NamaEvent, omitempty"`
-		TanggalEvent	string	`json: "TanggalEvent, omitempty"`
-		TempatEvent		string	`json: "TempatEvent, omitempty"`
-		HostEvent		string	`json: "HostEvent, omitempty"`
+		ID_event		int		`json: "ID_event"`
+		NamaEvent		string	`json: "NamaEvent"`
+		TanggalEvent	string	`json: "TanggalEvent"`
+		TempatEvent		string	`json: "TempatEvent"`
+		HostEvent		string	`json: "HostEvent"`
 }
 
 
 func main() {
 		port := 8181
 		
-		http.HandleFunc("/insert", func(w http.ResponseWriter, r* http.Request) {
-			http.ServeFile(w,r,"insert.html")
+		http.HandleFunc("/insert/", func(w http.ResponseWriter, r* http.Request) {
+			switch r.Method{
+				case "GET":
+					http.ServeFile(w,r,"insert.html")
+				case "POST":
+					InsertEvent(w,r)
+			}
 		})
+		
 		
 		http.HandleFunc("/event/", func(w http.ResponseWriter, r* http.Request) {
 			switch r.Method{
@@ -49,6 +59,7 @@ func main() {
 						} else if s == "upcoming" {
 							GetAllUpcomingEvent(w,r)
 						} else {
+							http.ServeFile(w,r,"getAllEvent.html")
 							GetEvent(w,r,s)
 						}	
 					}else{
@@ -57,6 +68,7 @@ func main() {
 					
 				case "POST":
 					InsertEvent(w,r)
+					break
 					
 				default:
 					http.Error(w, "Invalid Request method", 405)
@@ -367,27 +379,31 @@ func GetEventPlace(w http.ResponseWriter, r *http.Request, s string) {
 //InsertEvent
 //Menambahkan event
 func InsertEvent (w http.ResponseWriter, r *http.Request) {
-	var Event myEvent
-	dec := json.NewDecoder(r.Body)
-	err:=dec.Decode(&Event)
+	
+	Event := myEvent{}
+	
+	de := json.NewDecoder(r.Body)
+	
+	err:=de.Decode(&Event)
 	if err != nil{
 		log.Fatal(err)
 	}
 	defer r.Body.Close()
 
-	
-	db, err := sql.Open("mysql",
-				"root:@tcp(127.0.0.1:3306)/eventobi_db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	
-	stmt, err := db.Prepare("INSERT INTO event (ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent) VALUES (?,?,?,?,?)")
+	db,err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/eventobi_db")
 	if err != nil{
 		log.Fatal(err)
 	}
 	
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO event (ID_event,NamaEvent,TanggalEvent,TempatEvent,HostEvent) VALUES (?,?,?,?,?)")
+	if err != nil{
+		log.Fatal(err)
+	}
+	
+	defer stmt.Close()
+	
 	_, err = stmt.Exec(Event.ID_event, Event.NamaEvent, Event.TanggalEvent, Event.TempatEvent, Event.HostEvent)
 	
 }
-
