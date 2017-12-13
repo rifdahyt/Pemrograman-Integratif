@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta content="application/json; charset=utf-8" />
+    <title> Get Event by Place </title>
+</head>
+
+<body>
+    <div>
+		<center>
+        <h1>Get Event by Place</h1>
+    
+            
+            <br>
+            Tempat Event : <input type="text" id="tempat" >
+            <br><br>
+            <script> var x = document.getElementById("tempat").value; </script>
+            <button onclick=location.href="/event/?=" + x>Search</button>
+            <button onclick=location.href="http://localhost:8181/eventobi/">Back</button>
+		</center>
+    </div>
+</body>
+</html>

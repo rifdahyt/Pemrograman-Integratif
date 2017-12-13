@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta content="application/json; charset=utf-8" />
+    <title> Get Event by Date </title>
+</head>
+
+<body>    
+    <div>
+		<center>
+        <h1>Get Event by Date</h1>
+    
+            
+            <br>
+            Tanggal Event : <input type="text" id="tanggal" value="YYYY-MM-DD">
+            <br><br>
+            <script> var x = document.getElementById("tanggal").value; </script>
+            <button onclick=location.href="/tanggal/?=" + x>Search</button>
+            <button onclick=location.href="http://localhost:8181/eventobi/">Back</button>
+		</center>
+    </div>
+</body>
+</html>

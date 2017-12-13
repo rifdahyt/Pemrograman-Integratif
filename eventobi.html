@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta content="application/json; charset=utf-8" />
+    <title> EVENTOBI </title>
+    
+</head>
+
+<body>
+ 
+    <div>
+		<center>
+			<h1>Welcome to Eventobi!</h1>
+			<br>
+			<form action="/event/" method="GET" >
+			<input type="submit" id="GET" value="Show All Event">
+			</form>
+			<br>
+			<form action="/event/today" method="GET" >
+			<input type="submit" value="Today's Event">
+			</form>
+			<br>
+			<form action="/event/tomorrow" method="GET" >
+			<input type="submit" value="Tomorrow's Event">
+			</form>
+			<br>
+			<form action="/event/upcoming" method="GET" >
+			<input type="submit" value="Upcoming Event">
+			</form>
+			<br>
+			<form action="/getbyname" method="GET" >
+			<input type="submit" value="Get Event by Name">
+			</form>
+			<br>
+			<form action="/getbydate" method="GET" >
+			<input type="submit" value="Get Event by Date">
+			</form>
+			<br>
+			<form action="/getbyplace" method="GET" >
+			<input type="submit" value="Get Event by Place">
+			</form>
+			<br>
+			<form action="/insert" method="GET" >
+			<input type="submit" value="Post an Event">
+			</form>
+        </center>
+    </div>
+    <span id="a"></span>
+</body>
