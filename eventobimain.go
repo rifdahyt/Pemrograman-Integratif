@@ -8,7 +8,7 @@ import (
 	"net/http"
 	//"io"
 	//"github.com/julienschmidt/httprouter"
-	//"strconv"
+	"strconv"
 	//"os"
 	//"strings"
 	//"time"
@@ -62,10 +62,15 @@ func main() {
 			http.ServeFile(w, r, "insert.html")
 	})
 	
+	http.HandleFunc("/getbyhost/", func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, "getHost.html")
+	})
+	
 	http.HandleFunc("/submitEvent/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			InsertEvent(w, r)
+			GetAllEvent(w,r)	
 		}
 	})
 
@@ -80,32 +85,38 @@ func main() {
 					GetAllTomorrowEvent(w, r)
 				} else if s == "upcoming" {
 					GetAllUpcomingEvent(w, r)
-				} else {
-					GetEvent(w, r, s)
-				}
+				} else {}
 			} else {
 				GetAllEvent(w,r)
 			}
-
-		case "POST":
-			InsertEvent(w, r)
-			break
 
 		default:
 			http.Error(w, "Invalid Request method", 405)
 		}
 
 	})
+	
+	http.HandleFunc("/nama/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			if r.URL.Query().Get("nama") != "" {
+				nama := r.URL.Query().Get("nama")
+				GetEvent(w,r,nama)
+			}
+				
+		default:
+			http.Error(w, "Invalid Request Method", 405)
+		}
+	})
 
 	http.HandleFunc("/host/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			s := r.URL.Path[len("/host/"):]
-			if s != "" {
-				GetHostEvent(w, r, s)
-			} else {
-				GetAllEvent(w, r)
+			if r.URL.Query().Get("host") != "" {
+				host := r.URL.Query().Get("host")
+				GetHostEvent(w,r,host)
 			}
+				
 		default:
 			http.Error(w, "Invalid Request Method", 405)
 		}
@@ -114,10 +125,11 @@ func main() {
 	http.HandleFunc("/tanggal/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			s := r.URL.Path[len("/tanggal/"):]
-			if s != "" {
-				GetEventDate(w, r, s)
+			if r.URL.Query().Get("tanggal") != "" {
+				tanggal := r.URL.Query().Get("tanggal")
+				GetEventDate(w,r,tanggal)
 			}
+				
 		default:
 			http.Error(w, "Invalid Request Method", 405)
 		}
@@ -126,10 +138,11 @@ func main() {
 	http.HandleFunc("/tempat/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			s := r.URL.Path[len("/tempat/"):]
-			if s != "" {
-				GetEventPlace(w, r, s)
+			if r.URL.Query().Get("tempat") != "" {
+				tempat := r.URL.Query().Get("tempat")
+				GetEventPlace(w,r,tempat)
 			}
+				
 		default:
 			http.Error(w, "Invalid Request Method", 405)
 		}
@@ -185,7 +198,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request, s string) {
 	defer db.Close()
 
 	Event := event{}
-
+	
 	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE NamaEvent LIKE ?", "%"+s+"%")
 	if err != nil {
 		log.Fatal(err)
@@ -240,31 +253,6 @@ func GetAllTodaysEvent(w http.ResponseWriter, r *http.Request) {
 //getAllTomorrowEvent
 //Menampilkan semua event besok (query 3)
 func GetAllTomorrowEvent(w http.ResponseWriter, r *http.Request) {
-	/*db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
-
-	Event := event{}
-
-	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL 1 DAY")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err := rows.Scan(&Event.NamaEvent, &Event.TanggalEvent, &Event.TempatEvent, &Event.HostEvent)
-		if err != nil {
-			log.Fatal(err)
-		}
-		json.NewEncoder(w).Encode(&Event)
-	}
-	err = rows.Err()*/
 	
 	db, err := sql.Open("mysql",
 		"root:@tcp(127.0.0.1:3306)/eventobi_db")
@@ -424,31 +412,27 @@ func GetEventPlace(w http.ResponseWriter, r *http.Request, s string) {
 //InsertEvent
 //Menambahkan event
 func InsertEvent(w http.ResponseWriter, r *http.Request) {
-
-	var Event myEvent
 	
-	de := json.NewDecoder(r.Body)
-
-	err := de.Decode(&Event)
-	if err != nil {
+	if r.Method == http.MethodPost {
+		Event := event{}
+		
+		idevent, _ :=strconv.Atoi(r.FormValue("ID_event"))
+		
+		Event.ID_event = idevent
+		Event.NamaEvent = r.FormValue("NamaEvent")
+		Event.TanggalEvent = r.FormValue("TanggalEvent")
+		Event.TempatEvent = r.FormValue("TempatEvent")
+		Event.HostEvent = r.FormValue("HostEvent")
+		
+		db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/eventobi_db")
+			if err != nil {
+				log.Fatal(err)
+			}
+		
+		_,err = db.Exec("INSERT INTO event (ID_event,NamaEvent,TanggalEvent,TempatEvent,HostEvent) VALUES (?,?,?,?,?)", Event.ID_event, Event.NamaEvent, Event.TanggalEvent, Event.TempatEvent, Event.HostEvent)
+		if err != nil {
 		log.Fatal(err)
+		}
 	}
-	defer r.Body.Close()
-
-	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/eventobi_db")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
-
-	stmt, err := db.Prepare("INSERT INTO event (ID_event,NamaEvent,TanggalEvent,TempatEvent,HostEvent) VALUES (?,?,?,?,?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(Event.ID_event, Event.NamaEvent, Event.TanggalEvent, Event.TempatEvent, Event.HostEvent)
 
 }

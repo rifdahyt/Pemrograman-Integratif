@@ -6,18 +6,16 @@
 </head>
 
 <body>
-    
+    <a href="/eventobi">Back</a><br/>
     <div>
 		<center>
         <h1>Get Event by Name</h1>
     
-            
+            <form action="/nama/" method="GET" >
             <br>
-            Nama Event : <input type="text" id="nama">
+            Nama Event : <input type="text" name="nama">
             <br><br>
-            <script> var x = document.getElementById("nama").value; </script>
-            <button onclick=location.href="/event/?=" + x>Search</button>
-            <button onclick=location.href="http://localhost:8181/eventobi/">Back</button>
+            <input type="submit" value="Submit">
 		</center>
     </div>
 </body>

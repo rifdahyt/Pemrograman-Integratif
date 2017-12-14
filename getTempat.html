@@ -6,17 +6,17 @@
 </head>
 
 <body>
+	<a href="/eventobi">Back</a><br/>
     <div>
 		<center>
         <h1>Get Event by Place</h1>
     
             
+            <form action="/tempat/" method="GET" >
             <br>
-            Tempat Event : <input type="text" id="tempat" >
+            Tempat Event : <input type="text" name="tempat">
             <br><br>
-            <script> var x = document.getElementById("tempat").value; </script>
-            <button onclick=location.href="/event/?=" + x>Search</button>
-            <button onclick=location.href="http://localhost:8181/eventobi/">Back</button>
+            <input type="submit" value="Submit">
 		</center>
     </div>
 </body>

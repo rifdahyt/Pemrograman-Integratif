@@ -5,18 +5,18 @@
     <title> Get Event by Date </title>
 </head>
 
-<body>    
+<body>  
+	<a href="/eventobi">Back</a><br/>  
     <div>
 		<center>
         <h1>Get Event by Date</h1>
     
             
+            <form action="/tanggal/" method="GET" >
             <br>
-            Tanggal Event : <input type="text" id="tanggal" value="YYYY-MM-DD">
+            Tanggal Event : <input type="text" name="tanggal">
             <br><br>
-            <script> var x = document.getElementById("tanggal").value; </script>
-            <button onclick=location.href="/tanggal/?=" + x>Search</button>
-            <button onclick=location.href="http://localhost:8181/eventobi/">Back</button>
+            <input type="submit" value="Submit">
 		</center>
     </div>
 </body>

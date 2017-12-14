@@ -3,25 +3,6 @@
 <head>
     <meta content="application/json; charset=utf-8" />
     <title> INSERT EVENT </title>
-
-    <script type="text/javascript">
-
-        var url = "http://localhost:8181/event/";
-
-        var data={};
-        data.ID_event = parseInt(document.getElementById("ID_event").value);
-        data.NamaEvent = document.getElementById("NamaEvent").value;
-        data.TanggalEvent = document.getElementById("TanggalEvent").value;
-        data.TempatEvent = document.getElementById("TempatEvent").value;
-        data.HostEvent = document.getElementById("HostEvent").value;
-        var json = JSON.stringify(data);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type","application/json");
-        xhr.send(json);
-
-    </script>
 </head>
 
 <body>
@@ -30,17 +11,17 @@
     <center>
         <h1>Post an Event</h1>
         <form action="/submitEvent/" method="POST" >
-            ID Event		: <input type="text" id="ID_event">
+            ID Event		: <input type="text" name="ID_event">
             <br><br>
-            Nama Event 		: <input type="text" id="NamaEvent">
+            Nama Event 		: <input type="text" name="NamaEvent">
             <br><br>
-            Tanggal Event	: <input type="text" id="TanggalEvent" value="yyyy-mm-dd">
+            Tanggal Event	: <input type="text" name="TanggalEvent" placeholder="yyyy-mm-dd">
             <br><br>
-            Tempat Event 	: <input type="text" id="TempatEvent">
+            Tempat Event 	: <input type="text" name="TempatEvent">
             <br><br>
-            Penyelenggara	: <input type ="text" id="HostEvent">
+            Penyelenggara	: <input type ="text" name="HostEvent">
             <br><br>
-            <input type="submit" id="Post" value="Submit">
+            <input type="submit" value="Submit">
         </form>
     </center>
 </div>
