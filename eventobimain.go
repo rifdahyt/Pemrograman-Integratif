@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -157,7 +157,7 @@ func main() {
 func GetAllEvent(w http.ResponseWriter, r *http.Request) {
 	
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -165,11 +165,7 @@ func GetAllEvent(w http.ResponseWriter, r *http.Request) {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 	
 	rows, err := db.Query(
-       `SELECT NamaEvent, 
-       TanggalEvent, 
-       TempatEvent, 
-       HostEvent 
-       FROM event;`)
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event;")
     if err != nil {
 		log.Fatal(err)
 	}
@@ -177,45 +173,42 @@ func GetAllEvent(w http.ResponseWriter, r *http.Request) {
     Event := make([]event, 0)
     for rows.Next() {
       myevent := event{}
-      rows.Scan(&myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
       Event = append(Event, myevent)
     }
 	
 	//log.Println(Event)
 	tpl.ExecuteTemplate(w, "getAll.html", Event)
-
+	
 }
 
 //getEvent berdasarkan nama
 //search event berdasarkan nama event (query 5)
 func GetEvent(w http.ResponseWriter, r *http.Request, s string) {
-	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
-
-	Event := event{}
 	
-	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE NamaEvent LIKE ?", "%"+s+"%")
+	db, err := sql.Open("mysql",
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
+		log.Fatal(err)
+	}
+	
+	tpl = template.Must(template.ParseGlob("templates/*"))
+	
+	rows, err := db.Query(
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE NamaEvent LIKE ?", "%"+s+"%")
+    if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
-	for rows.Next() {
-		err := rows.Scan(&Event.NamaEvent, &Event.TanggalEvent, &Event.TempatEvent, &Event.HostEvent)
-		if err != nil {
-			log.Fatal(err)
-		}
-		json.NewEncoder(w).Encode(&Event)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
+    Event := make([]event, 0)
+    for rows.Next() {
+      myevent := event{}
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      Event = append(Event, myevent)
+    }
+	
+	//log.Println(Event)
+	tpl.ExecuteTemplate(w, "getAll.html", Event)
 	
 }
 
@@ -225,7 +218,7 @@ func GetAllTodaysEvent(w http.ResponseWriter, r *http.Request) {
 
 	
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -233,7 +226,7 @@ func GetAllTodaysEvent(w http.ResponseWriter, r *http.Request) {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 	
 	rows, err := db.Query(
-       `SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent = CURDATE();`)
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent = CURDATE();")
     if err != nil {
 		log.Fatal(err)
 	}
@@ -241,13 +234,13 @@ func GetAllTodaysEvent(w http.ResponseWriter, r *http.Request) {
     Event := make([]event, 0)
     for rows.Next() {
       myevent := event{}
-      rows.Scan(&myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
       Event = append(Event, myevent)
     }
 	
 	//log.Println(Event)
 	tpl.ExecuteTemplate(w, "getAll.html", Event)
-
+	
 }
 
 //getAllTomorrowEvent
@@ -255,7 +248,7 @@ func GetAllTodaysEvent(w http.ResponseWriter, r *http.Request) {
 func GetAllTomorrowEvent(w http.ResponseWriter, r *http.Request) {
 	
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -263,7 +256,7 @@ func GetAllTomorrowEvent(w http.ResponseWriter, r *http.Request) {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 	
 	rows, err := db.Query(
-       `SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL 1 DAY;`)
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL 1 DAY;")
     if err != nil {
 		log.Fatal(err)
 	}
@@ -271,13 +264,13 @@ func GetAllTomorrowEvent(w http.ResponseWriter, r *http.Request) {
     Event := make([]event, 0)
     for rows.Next() {
       myevent := event{}
-      rows.Scan(&myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
       Event = append(Event, myevent)
     }
 	
 	//log.Println(Event)
 	tpl.ExecuteTemplate(w, "getAll.html", Event)
-
+	
 }
 
 //getAllUpcomingEvent
@@ -285,7 +278,7 @@ func GetAllTomorrowEvent(w http.ResponseWriter, r *http.Request) {
 func GetAllUpcomingEvent(w http.ResponseWriter, r *http.Request) {
 	
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -293,7 +286,7 @@ func GetAllUpcomingEvent(w http.ResponseWriter, r *http.Request) {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 	
 	rows, err := db.Query(
-       `SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL 30 DAY;`)
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL 30 DAY;")
     if err != nil {
 		log.Fatal(err)
 	}
@@ -301,13 +294,13 @@ func GetAllUpcomingEvent(w http.ResponseWriter, r *http.Request) {
     Event := make([]event, 0)
     for rows.Next() {
       myevent := event{}
-      rows.Scan(&myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
       Event = append(Event, myevent)
     }
 	
 	//log.Println(Event)
 	tpl.ExecuteTemplate(w, "getAll.html", Event)
-
+	
 }
 
 //getHostEvent
@@ -315,32 +308,29 @@ func GetAllUpcomingEvent(w http.ResponseWriter, r *http.Request) {
 func GetHostEvent(w http.ResponseWriter, r *http.Request, s string) {
 
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer db.Close()
-
-	Event := event{}
-
-	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE HostEvent LIKE ?", "%"+s+"%")
-	if err != nil {
+	
+	tpl = template.Must(template.ParseGlob("templates/*"))
+	
+	rows, err := db.Query(
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE HostEvent LIKE ?", "%"+s+"%")
+    if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
-	for rows.Next() {
-		err := rows.Scan(&Event.NamaEvent, &Event.TanggalEvent, &Event.TempatEvent, &Event.HostEvent)
-		if err != nil {
-			log.Fatal(err)
-		}
-		json.NewEncoder(w).Encode(&Event)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
+    Event := make([]event, 0)
+    for rows.Next() {
+      myevent := event{}
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      Event = append(Event, myevent)
+    }
+	
+	//log.Println(Event)
+	tpl.ExecuteTemplate(w, "getAll.html", Event)
+	
 }
 
 //getEventDate
@@ -348,32 +338,29 @@ func GetHostEvent(w http.ResponseWriter, r *http.Request, s string) {
 func GetEventDate(w http.ResponseWriter, r *http.Request, s string) {
 
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer db.Close()
-
-	Event := event{}
-
-	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent LIKE ?", "%"+s+"%")
-	if err != nil {
+	
+	tpl = template.Must(template.ParseGlob("templates/*"))
+	
+	rows, err := db.Query(
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TanggalEvent LIKE ?", "%"+s+"%")
+    if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
-	for rows.Next() {
-		err := rows.Scan(&Event.NamaEvent, &Event.TanggalEvent, &Event.TempatEvent, &Event.HostEvent)
-		if err != nil {
-			log.Fatal(err)
-		}
-		json.NewEncoder(w).Encode(&Event)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
+    Event := make([]event, 0)
+    for rows.Next() {
+      myevent := event{}
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      Event = append(Event, myevent)
+    }
+	
+	//log.Println(Event)
+	tpl.ExecuteTemplate(w, "getAll.html", Event)
+	
 }
 
 //getEventPlace
@@ -381,32 +368,29 @@ func GetEventDate(w http.ResponseWriter, r *http.Request, s string) {
 func GetEventPlace(w http.ResponseWriter, r *http.Request, s string) {
 
 	db, err := sql.Open("mysql",
-		"root:@tcp(127.0.0.1:3306)/eventobi_db")
+		"root:@tcp(167.205.67.251:3306)/eventobi_db")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer db.Close()
-
-	Event := event{}
-
-	rows, err := db.Query("SELECT NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TempatEvent LIKE ?", "%"+s+"%")
-	if err != nil {
+	
+	tpl = template.Must(template.ParseGlob("templates/*"))
+	
+	rows, err := db.Query(
+       "SELECT ID_event, NamaEvent, TanggalEvent, TempatEvent, HostEvent FROM event WHERE TempatEvent LIKE ?", "%"+s+"%")
+    if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
-	for rows.Next() {
-		err := rows.Scan(&Event.NamaEvent, &Event.TanggalEvent, &Event.TempatEvent, &Event.HostEvent)
-		if err != nil {
-			log.Fatal(err)
-		}
-		json.NewEncoder(w).Encode(&Event)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
+    Event := make([]event, 0)
+    for rows.Next() {
+      myevent := event{}
+      rows.Scan(&myevent.ID_event, &myevent.NamaEvent, &myevent.TanggalEvent, &myevent.TempatEvent, &myevent.HostEvent)
+      Event = append(Event, myevent)
+    }
+	
+	//log.Println(Event)
+	tpl.ExecuteTemplate(w, "getAll.html", Event)
+	
 }
 
 //InsertEvent
@@ -424,7 +408,7 @@ func InsertEvent(w http.ResponseWriter, r *http.Request) {
 		Event.TempatEvent = r.FormValue("TempatEvent")
 		Event.HostEvent = r.FormValue("HostEvent")
 		
-		db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/eventobi_db")
+		db, err := sql.Open("mysql", "root:@tcp(167.205.67.251:3306)/eventobi_db")
 			if err != nil {
 				log.Fatal(err)
 			}
